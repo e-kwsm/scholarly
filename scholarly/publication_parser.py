@@ -1,3 +1,4 @@
+from typing import List, Union
 import re
 import bibtexparser
 import arrow
@@ -108,7 +109,7 @@ class PublicationParser(object):
     def __init__(self, nav):
         self.nav = nav
 
-    def _citation_pub(self, __data, publication: Publication):
+    def _citation_pub(self, __data, publication: Publication) -> Publication:
         # create the bib entry in the dictionary
         publication['bib']['title'] = __data.find('a', class_='gsc_a_at').text
         publication['author_pub_id'] = re.findall(_CITATIONPUBRE, __data.find(
@@ -155,7 +156,7 @@ class PublicationParser(object):
         else:
             return publication
 
-    def _get_authorlist(self, authorinfo):
+    def _get_authorlist(self, authorinfo: str) -> List[str]:
         authorlist = list()
         text = authorinfo.split(' - ')[0]
         for i in text.split(','):
@@ -374,7 +375,7 @@ class PublicationParser(object):
         return publication
 
 
-    def citedby(self, publication: Publication) -> _SearchScholarIterator or list:
+    def citedby(self, publication: Publication) -> Union[_SearchScholarIterator, list]:
         """Searches Google Scholar for other articles that cite this Publication and
         returns a Publication generator.
 
