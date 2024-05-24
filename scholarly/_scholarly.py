@@ -7,7 +7,7 @@ import csv
 import pprint
 import datetime
 import re
-from typing import Dict, List, Union
+from typing import Dict, Iterator, List, Optional, Union
 from ._navigator import Navigator
 from ._proxy_generator import ProxyGenerator
 from dotenv import find_dotenv, load_dotenv
@@ -159,7 +159,7 @@ class _Scholarly:
                                   sort_by=sort_by, include_last_year=include_last_year, start_index=start_index)
         return self.__nav.search_publications(url)
 
-    def search_citedby(self, publication_id: Union[int, str], **kwargs):
+    def search_citedby(self, publication_id: Union[int, str], **kwargs) -> _SearchScholarIterator:
         """Searches by Google Scholar publication id and returns a generator of Publication objects.
 
         :param publication_id: Google Scholar publication id
@@ -181,7 +181,7 @@ class _Scholarly:
         url = _PUBSEARCH.format(requests.utils.quote(pub_title))
         return self.__nav.search_publication(url, filled)
 
-    def search_author(self, name: str):
+    def search_author(self, name: str) -> Iterator[Author]:
         """Search by author name and return a generator of Author objects
 
         :Example::
@@ -208,7 +208,7 @@ class _Scholarly:
         url = _AUTHSEARCH.format(requests.utils.quote(name))
         return self.__nav.search_authors(url)
 
-    def fill(self, object: dict, sections=[], sortby: str = "citedby", publication_limit: int = 0) -> Author or Publication:
+    def fill(self, object: dict, sections=[], sortby: str = "citedby", publication_limit: int = 0) -> Union[Author, Publication]:
         """Fills the object according to its type.
         If the container type is Author it will fill the additional author fields
         If it is Publication it will fill it accordingly.
@@ -238,7 +238,7 @@ class _Scholarly:
             object = publication_parser.fill(object)
         return object
 
-    def bibtex(self, object: Publication)->str:
+    def bibtex(self, object: Publication) -> Optional[str]:
         """Returns a bibtex entry for a publication that has either Scholar source
         or citation source
 
